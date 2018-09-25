@@ -1,0 +1,16 @@
+[
+{
+  "modid": "lagbgonreborn",
+  "name": "Lag'B'Gon Reborn",
+  "description": "Lag reduction utility for Forge, inspired by ClearLagg for Bukkit.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["FTB_lag"],
+  "credits": "ZenDarva for original mod version.",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
