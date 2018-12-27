@@ -25,13 +25,10 @@ public class LBGEvents {
             for (ClassInheritanceMultiMap<Entity> list : chunk.getEntityLists()) {
                 count += list.size();
             }
-            System.out.println("Amount: " + count);
             if (count >= LBGConfig.perChunkSpawnLimit) {
                 e.setCanceled(true);
-                System.out.println("Denied!!");
                 return;
             }
-            System.out.println("Allowed");
 
         }
 
