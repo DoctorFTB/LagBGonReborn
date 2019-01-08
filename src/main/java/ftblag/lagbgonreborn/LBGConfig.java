@@ -151,7 +151,17 @@ public class LBGConfig {
     }
 
     public boolean isBlacklisted(Entity entity) {
-        return entityBlacklist.contains(EntityList.getKey(entity).toString());
+        if (entity == null)
+            return false;
+
+        ResourceLocation rl = EntityList.getKey(entity);
+        if (rl != null)
+            return entityBlacklist.contains(rl.toString());
+        else {
+            String className = entity.getClass().toString();
+            System.out.println("Failed to get registered mob name! Class: " + className);
+            return entityBlacklist.contains(className);
+        }
     }
 
     public boolean isBlacklisted(String name) {
@@ -159,7 +169,7 @@ public class LBGConfig {
     }
 
     public static void save() {
-        cfg.get(Configuration.CATEGORY_GENERAL, "EntityBlackList", new String[]{"Cow",}, "List of Entities not to destroy.").set(entityBlacklist.toArray(new String[entityBlacklist.size()]));
+        cfg.get(Configuration.CATEGORY_GENERAL, "EntityBlackList", new String[]{"minecraft:cow",}, "List of Entities not to destroy.").set(entityBlacklist.toArray(new String[entityBlacklist.size()]));
         cfg.get(Configuration.CATEGORY_GENERAL, "ItemBlackList", new String[]{"minecraft:diamond",}, "List of Items not to destroy").set(itemBlacklist.toArray(new String[itemBlacklist.size()]));
         cfg.get(Configuration.CATEGORY_GENERAL, "Interval", 15, "Interval between clearing entities in minutes.").set(timeInterval);
         cfg.get(Configuration.CATEGORY_GENERAL, "AutomaticRemoval", true).set(automaticRemoval);
