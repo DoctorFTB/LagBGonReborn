@@ -15,9 +15,9 @@ public class LBGConfig {
     public static Configuration cfg;
 
     public static List<String> entityBlacklist = new ArrayList<>(), itemBlacklist = new ArrayList<>();
-    public static ArrayList<Item> itemsBlackList = new ArrayList<>();
+//    public static ArrayList<Item> itemsBlackList = new ArrayList<>();
     public static int timeInterval, TPSForUnload, crowdLimit, perChunkSpawnLimit, timeUnload;
-    public static boolean automaticRemoval, policeCrowd, blacklist, namedRemove;
+    public static boolean automaticRemoval, policeCrowd, blacklist, namedRemove, redBoldWarning;
 
     private static LBGConfig ins;
 
@@ -45,25 +45,26 @@ public class LBGConfig {
         blacklist = cfg.get(Configuration.CATEGORY_GENERAL, "Blacklist", true, "Should we use a blacklist or a whitelist for mob removal? \\n Blacklist is default.").getBoolean();
         namedRemove = cfg.get(Configuration.CATEGORY_GENERAL, "NamedRemove", false, "Remove named entities? (With name tag)").getBoolean();
         timeUnload = cfg.get(Configuration.CATEGORY_GENERAL, "Unload", 15, "Interval between unload chunks in minutes.").getInt();
+        redBoldWarning = cfg.get(Configuration.CATEGORY_GENERAL, "RedBoldWarning", false, "Add red bold styles for warning message").getBoolean();
         cfg.save();
-        updateBlacklist();
+//        updateBlacklist();
         checkEntityBlacklist();
     }
 
     public static void checkEntityBlacklist() {
         for (String str : entityBlacklist) {
-            if (!ForgeRegistries.ENTITIES.containsKey(new ResourceLocation(str))) {
+            if (!str.contains("*") && !ForgeRegistries.ENTITIES.containsKey(new ResourceLocation(str))) {
                 System.out.println("[LagBGonReborn] Found error mob id! ID: " + str);
             }
         }
     }
 
-    private void updateBlacklist() {
-        itemsBlackList.clear();
-        for (String str : itemBlacklist) {
-            itemsBlackList.add(Item.REGISTRY.getObject(new ResourceLocation(str)));
-        }
-    }
+//    private void updateBlacklist() {
+//        itemsBlackList.clear();
+//        for (String str : itemBlacklist) {
+//            itemsBlackList.add(Item.REGISTRY.getObject(new ResourceLocation(str)));
+//        }
+//    }
 
     public void toggleAuto() {
         automaticRemoval = !automaticRemoval;
@@ -127,12 +128,22 @@ public class LBGConfig {
     }
 
     public void toggleItem(Item item) {
-        if (itemsBlackList.contains(item)) {
-            itemBlacklist.remove(Item.REGISTRY.getNameForObject(item).toString());
-            itemsBlackList.remove(item);
+//        if (itemsBlackList.contains(item)) {
+//            itemBlacklist.remove(Item.REGISTRY.getNameForObject(item).toString());
+//            itemsBlackList.remove(item);
+//        } else {
+//            itemBlacklist.add(Item.REGISTRY.getNameForObject(item).toString());
+//            itemsBlackList.add(item);
+//        }
+        String name = item.getRegistryName().toString();
+        if (itemBlacklist.contains(name)) {
+//            itemBlacklist.remove(Item.REGISTRY.getNameForObject(item).toString());
+            itemBlacklist.remove(name);
+//            itemsBlackList.remove(item);
         } else {
-            itemBlacklist.add(Item.REGISTRY.getNameForObject(item).toString());
-            itemsBlackList.add(item);
+//            itemBlacklist.add(Item.REGISTRY.getNameForObject(item).toString());
+            itemBlacklist.add(name);
+//            itemsBlackList.add(item);
         }
         save();
     }
@@ -147,7 +158,8 @@ public class LBGConfig {
     }
 
     public boolean isBlacklisted(Item item) {
-        return itemsBlackList.contains(item);
+        ResourceLocation name = item.getRegistryName();
+        return itemBlacklist.contains(name.toString()) || itemBlacklist.contains(name.getNamespace() + ":*");
     }
 
     public boolean isBlacklisted(Entity entity) {
@@ -155,9 +167,9 @@ public class LBGConfig {
             return false;
 
         ResourceLocation rl = EntityList.getKey(entity);
-        if (rl != null)
-            return entityBlacklist.contains(rl.toString());
-        else {
+        if (rl != null) {
+            return entityBlacklist.contains(rl.toString()) || entityBlacklist.contains(rl.getNamespace() + ":*");
+        } else {
             String className = entity.getClass().toString();
             System.out.println("Failed to get registered mob name! Class: " + className);
             return entityBlacklist.contains(className);

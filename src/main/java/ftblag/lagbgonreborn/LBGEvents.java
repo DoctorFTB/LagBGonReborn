@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ClassInheritanceMultiMap;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -68,7 +69,8 @@ public class LBGEvents {
                 warned = false;
             } else {
                 nextClear = System.currentTimeMillis() + 1000 * 60;
-                FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().sendMessage(new TextComponentString("Lag'B'Gon will be removing items in 1 minute!"));
+                String style = LBGConfig.redBoldWarning ? TextFormatting.RED.toString() + TextFormatting.BOLD : "";
+                FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().sendMessage(new TextComponentString(style + "Lag'B'Gon will be removing items in 1 minute!"));
                 warned = true;
             }
         }
