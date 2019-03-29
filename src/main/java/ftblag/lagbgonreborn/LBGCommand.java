@@ -1,18 +1,19 @@
 package ftblag.lagbgonreborn;
 
+import com.google.common.collect.Lists;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -20,7 +21,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import scala.actors.threadpool.Arrays;
 
 import java.util.*;
 
@@ -257,21 +257,37 @@ public class LBGCommand extends CommandBase {
         ChunkProviderServer cPS;
         int oldChunksLoaded;
         int newChunksLoaded;
-        boolean unloadSafe = true;
+        boolean unloadSafe;
 
         oldChunksLoaded = 0;
         newChunksLoaded = 0;
+
+        List<ChunkPos> playerPos = Lists.newArrayList();
+        int radius = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getViewDistance() + 1;
+        for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
+            for (int x = player.chunkCoordX - radius; x <= player.chunkCoordX + radius; x++) {
+                for (int z = player.chunkCoordZ - radius; z <= player.chunkCoordZ + radius; z++) {
+                    playerPos.add(new ChunkPos(x, z));
+                }
+            }
+        }
+
         for (WorldServer world : DimensionManager.getWorlds()) {
             oldChunksLoaded += world.getChunkProvider().getLoadedChunkCount();
             if (world.getChunkProvider() instanceof ChunkProviderServer) {
                 cPS = world.getChunkProvider();
 
                 for (Chunk chunk : cPS.loadedChunks.values()) {
-                    unloadSafe = true;
-                    for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
-                        if ((player.chunkCoordX == chunk.x && player.chunkCoordZ == chunk.z)) {
-                            unloadSafe = false;
-                        }
+                    ChunkPos chunkPos = new ChunkPos(chunk.x, chunk.z);
+                    unloadSafe = !world.getPersistentChunks().containsKey(chunkPos);
+                    if (unloadSafe) {
+                        unloadSafe = !playerPos.contains(chunkPos);
+//                        for (EntityPlayerMP player : FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers()) {
+//                            if ((player.chunkCoordX == chunk.x && player.chunkCoordZ == chunk.z)) {
+//                                unloadSafe = false;
+//                                break;
+//                            }
+//                        }
                     }
                     if (unloadSafe) {
                         cPS.queueUnload(chunk);
