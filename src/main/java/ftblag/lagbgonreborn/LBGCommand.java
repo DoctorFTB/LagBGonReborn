@@ -209,7 +209,7 @@ public class LBGCommand extends CommandBase {
                 obj = iter.next();
                 if (obj instanceof EntityItem) {
                     item = (EntityItem) obj;
-                    if (LBGConfig.blacklist && !config.isBlacklisted(item.getItem().getItem())) {
+                    if (LBGConfig.blacklist && config.isBlacklisted(item.getItem().getItem())) {
                         toRemove.add(item);
                         itemsRemoved++;
                     }
