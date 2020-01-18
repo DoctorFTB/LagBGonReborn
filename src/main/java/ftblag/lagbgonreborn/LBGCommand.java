@@ -219,19 +219,19 @@ public class LBGCommand extends CommandBase {
                     }
                 } else if (!(obj instanceof EntityPlayer)) {
                     entity = obj;
-                    if (!config.isBlacklisted(entity) && LBGConfig.blacklist) {
+                    if (config.isBlacklisted(entity) && LBGConfig.blacklist) {
                         toRemove.add(entity);
-                        entitiesRemoved++;
                     }
-                    if (config.isBlacklisted(entity) && !LBGConfig.blacklist) {
+                    if (!config.isBlacklisted(entity) && !LBGConfig.blacklist) {
                         toRemove.add(entity);
-                        entitiesRemoved++;
                     }
                 }
             }
             for (Entity e : toRemove) {
-                if (e.hasCustomName() && LBGConfig.namedRemove || !e.hasCustomName() && !LBGConfig.namedRemove)
+                if (e.hasCustomName() && LBGConfig.namedRemove || !e.hasCustomName() && !LBGConfig.namedRemove) {
                     e.setDead();
+                    entitiesRemoved++;
+                }
             }
             toRemove.clear();
         }
