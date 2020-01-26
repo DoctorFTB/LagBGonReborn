@@ -72,7 +72,7 @@ public class LBGCommand extends CommandBase {
         } else if (args.length == 1) {
             if (args[0].equals("blacklist")) {
                 config.toggleBlacklist();
-                LagBGonReborn.sendMsg(sender, (LBGConfig.blacklist ? "Black" : "While") + "list enabled.");
+                LagBGonReborn.sendMsg(sender, (LBGConfig.blacklist ? "While" : "Black") + "list enabled.");
             } else if (args[0].equals("scanentities")) {
                 if (!(sender instanceof EntityPlayer)) {
                     LagBGonReborn.sendMsg(sender, "Only for players!");
